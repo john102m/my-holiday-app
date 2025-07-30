@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import '../App.css'
 import HolidayCard from '../components/HolidayCard';
 
 function Home() {
+    const location = useLocation();
     const navigate = useNavigate();
     //const [count, setCount] = useState(0)
     const [packages, setPackages] = useState([])
@@ -16,6 +17,22 @@ function Home() {
             .catch(console.error)
     }, [])
 
+    useEffect(() => {
+        console.log('fromId:', location.state?.fromId, 'packages length:', packages.length);
+        if (location.state?.fromId && packages.length > 0) {
+            // Wait for the DOM to render
+            requestAnimationFrame(() => {
+                const el = document.getElementById(`package-${location.state.fromId}`);
+                if (el) {
+                    console.log("I want to scroll");
+                    el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                }
+            });
+        }
+    }, [location.state?.fromId, packages]);
+
+
+
     return (
         <>
             <div className="mt-10 p-6 bg-sky-50 min-h-screen">
@@ -24,6 +41,7 @@ function Home() {
                 <div className="flex flex-wrap gap-6 justify-center">
                     {packages.map(pkg => (
                         <HolidayCard
+                            id={`package-${pkg.id}`}
                             key={pkg.id}
                             destination={pkg.destination}
                             name={pkg.name}
@@ -31,7 +49,7 @@ function Home() {
                             description={pkg.description}
                             nights={pkg.nights}
                             image={pkg.imageUrl}
-                            onClick={() => navigate(`/package/${pkg.id}`)}
+                            onClick={() => navigate(`/package/${pkg.id}`, { state: { fromId: pkg.id } })}
                         />
                     ))}
                 </div>

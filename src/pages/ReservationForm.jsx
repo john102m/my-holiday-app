@@ -101,7 +101,7 @@ function ReservationForm() {
         <div className="p-6 mt-10 bg-sky-50 min-h-screen flex justify-center items-start">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white p-8 rounded-xl shadow-xl max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8"
+                className="bg-white p-6 sm:p-8 rounded-xl shadow-xl max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
             >
                 {/* Left column: Form */}
                 <div>
@@ -117,7 +117,7 @@ function ReservationForm() {
                             value={form.guestName}
                             onChange={handleChange}
                             required
-                            className="w-full mt-1 px-3 py-2 border rounded shadow-sm"
+                            className="w-full mt-1 px-2 py-1.5 border rounded shadow-sm text-sm sm:text-base"
                         />
                     </div>
 
@@ -130,7 +130,7 @@ function ReservationForm() {
                                 value={form.checkIn}
                                 onChange={handleChange}
                                 required
-                                className="w-full mt-1 px-3 py-2 border rounded"
+                                className="w-full mt-1 px-2 py-1.5 border rounded text-sm sm:text-base"
                             />
                         </div>
                         <div>
@@ -141,7 +141,7 @@ function ReservationForm() {
                                 value={form.checkOut}
                                 onChange={handleChange}
                                 required
-                                className="w-full mt-1 px-3 py-2 border rounded"
+                                className="w-full mt-1 px-2 py-1.5 border rounded text-sm sm:text-base"
                             />
                         </div>
                     </div>
@@ -154,8 +154,8 @@ function ReservationForm() {
                             value={form.totalPrice}
                             onChange={handleChange}
                             required
-                            className="w-full mt-1 px-3 py-2 border rounded"
-                            step="0.01"
+                            className="w-full mt-1 px-2 py-1.5 border rounded text-sm sm:text-base"
+                            step="1"
                             min="0"
                         />
                     </div>
@@ -167,7 +167,7 @@ function ReservationForm() {
                             onChange={handleChange}
                             rows={3}
                             placeholder="e.g. Birthday trip, airport transfer requested..."
-                            className="w-full mt-1 px-3 py-2 border rounded shadow-sm"
+                            className="w-full mt-1 px-2 py-1.5 border rounded shadow-sm text-sm sm:text-base"
                         />
                     </div>
 
@@ -178,21 +178,21 @@ function ReservationForm() {
                             name="packageId"
                             value={form.packageId}
                             readOnly
-                            className="w-full mt-1 px-3 py-2 border rounded bg-gray-100 cursor-not-allowed"
+                            className="w-full mt-1 px-2 py-1.5 border rounded bg-gray-100 cursor-not-allowed text-sm sm:text-base"
                         />
                     </div>
 
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
                         <button
                             type="button"
                             onClick={() => navigate(-1)}
-                            className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                            className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700"
+                            className="w-full sm:w-auto px-6 py-2 text-sm sm:text-base bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
                         >
                             {isEditMode ? 'Update' : 'Create'}
                         </button>
@@ -203,6 +203,7 @@ function ReservationForm() {
                 <PackageCard packageDetails={packageDetails} />
             </form>
         </div>
+
     );
 }
 

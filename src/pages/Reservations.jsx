@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+
+
 export default function Reservations() {
+    const location = useLocation();
     const [reservations, setReservations] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     // sortKey: which column; sortDir: 1 = asc, -1 = desc
@@ -13,6 +17,27 @@ export default function Reservations() {
     const isSearching = searchTerm.length >= MIN_CHARS;
     const noResults = isSearching && reservations.length === 0;
     const underLimit = searchTerm !== '' && searchTerm.length < MIN_CHARS;
+
+    useEffect(() => {
+        console.log('fromId:', location.state?.fromId, 'reservations length:', reservations.length);
+        if (location.state?.fromId && reservations.length > 0) {
+            const el = document.getElementById(`reservation-${location.state.fromId}`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'auto', block: 'center' });
+                el.classList.add('highlight-flash');
+                const handleAnimationEnd = () => {
+                    el.classList.remove('highlight-flash');
+                    el.removeEventListener('animationend', handleAnimationEnd);
+
+                };
+
+                el.addEventListener('animationend', handleAnimationEnd);
+
+            }
+        }
+    }, [location.state?.fromId, reservations]);
+
+
 
 
     // Fetch logic, re-used for both initial load & debounced search
@@ -28,7 +53,11 @@ export default function Reservations() {
             .catch(console.error);
     }, []);
 
-    useEffect(() => { fetchData(''); }, [fetchData]);
+    useEffect(() => {
+        if (location.pathname === '/reservations') {
+            fetchData('');
+        }
+    }, [location.pathname, fetchData]);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -110,38 +139,36 @@ export default function Reservations() {
             {/* Table wrapper with fixed height */}
             <div className="border border-gray-300 rounded-md shadow-md overflow-hidden flex-grow">
                 <div className="overflow-auto max-h-[70vh]">
-                    <table className="min-w-full text-left border-collapse">
-                        <thead className="bg-blue-100 text-blue-800 sticky top-0 z-10">
-                            <tr>
-                                {/* <th className="py-2 px-4 border-b w-[11rem]">Guest</th> */}
+                    <table className="min-w-full text-left border-collapse-separate border-spacing-0">
+                       <thead className="bg-blue-100 text-blue-800 sticky top-0 z-10 border-b border-blue-700 shadow-md">
+                            <tr >
+
                                 <th onClick={() => handleSort('guestName')}
-                                    className="py-2 px-4 border-b w-[10rem]"
+                                    className="cursor-pointer py-2 px-4  w-[10rem]"
                                     aria-sort={sortKey === 'guestName' ? (sortDir === 1 ? 'ascending' : 'descending') : 'none'
                                     }>
                                     Guest  <SortIcon active={sortKey === 'guestName'} dir={sortDir} />
                                 </th>
 
-                                <th className="py-2 px-4 border-b w-[16rem]">Package</th>
+                                <th className="py-2 px-4  w-[16rem]">Package</th>
 
-                                {/* <th className="py-2 px-4 border-b w-[10rem]">Check-in</th> */}
                                 <th onClick={() => handleSort('checkIn')}
-                                    className="py-2 px-4 border-b w-[10rem]"
+                                    className="cursor-pointer whitespace-nowrap py-2 px-4  w-[10rem]"
                                     aria-sort={sortKey === 'checkIn' ? (sortDir === 1 ? 'ascending' : 'descending') : 'none'
                                     }>
-                                    Check-in  <SortIcon active={sortKey === 'checkIn'} dir={sortDir} />
+                                    <span className="whitespace-nowrap">Check-in</span>
+                                    <SortIcon active={sortKey === 'checkIn'} dir={sortDir} />
                                 </th>
                                 <th
                                     onClick={() => handleSort('checkOut')}
-                                    className="cursor-pointer py-2 px-4 border-b w-[10rem] flex items-center"
+                                    className="cursor-pointer py-2 px-4 min-w-[8rem] flex items-center"
                                     aria-sort={sortKey === 'checkOut' ? (sortDir === 1 ? 'ascending' : 'descending') : 'none'
                                     }>
-                                    Check-out
+                                    <span className="whitespace-nowrap">Check-out</span>
                                     <SortIcon active={sortKey === 'checkOut'} dir={sortDir} />
                                 </th>
 
-
-
-                                <th className="py-2 px-4 border-b w-[8rem]">Total (£)</th>
+                                <th className="whitespace-nowrap py-2 px-4 w-[8rem]">Total (£)</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -165,15 +192,16 @@ export default function Reservations() {
                             {!noResults && !underLimit && sortedReservations.map((res, i) => (
                                 <tr
                                     key={res.id}
+                                    id={`reservation-${res.id}`}
                                     className={`${i % 2 ? 'bg-gray-200' : 'bg-white'} hover:bg-blue-100 cursor-pointer`}
-                                    onClick={() => navigate(`/reservations/${res.id}`)}
+                                    onClick={() => navigate(`/reservations/${res.id}`, { state: { fromId: res.id } })}
                                 >
                                     <td className="py-2 px-4 border-b">{res.guestName}</td>
                                     <td className="py-2 px-4 border-b">{res.packageName}</td>
                                     <td className="py-2 px-4 border-b">{formatDate(res.checkIn)}</td>
                                     <td className="py-2 px-4 border-b">{formatDate(res.checkOut)}</td>
                                     <td className="py-2 px-4 border-b font-semibold text-green-700">
-                                        {res.totalPrice.toFixed(2)}
+                                        {Math.round(res.totalPrice)}
                                     </td>
                                 </tr>
                             ))}

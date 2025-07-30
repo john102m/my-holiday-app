@@ -19,13 +19,27 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+/* in your CSS or global styles */
+.force-not-allowed {
+  cursor: not-allowed !important;
+}
 
 
 .blurred {
   filter: blur(39px) !important;
 }
 
-
+.highlight-flash {
+  animation: highlightFlash 2s ease forwards;
+}
+@keyframes highlightFlash {
+  0% {
+    background-color: #ffff99; /* light yellow */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
 
 @keyframes logo-spin {
   from {
